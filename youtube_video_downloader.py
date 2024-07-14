@@ -56,16 +56,14 @@ def get_video_info(url: str) -> Optional[dict]:
         return None
 
 
-def download_youtube_content(
-    input_url: str, output_location: str, quality: str = "best"
-):
+def download_youtube_content(input_url: str, output_location: str, quality: str):
     """
-    Downloads YouTube content (video or playlist) to the specified location.
+    Downloads YouTube content (video) to the specified location.
 
     Args:
         input_url (str): The URL of the YouTube video or playlist.
         output_location (str): The location to save the downloaded content.
-        quality (str): The desired video quality ('best', '720', '480', etc.).
+        quality (str): The desired video quality ('1080', '720', '480', etc.).
     """
     if not validate_url(input_url):
         logger.error("Invalid YouTube URL provided: %s", input_url)
@@ -80,11 +78,7 @@ def download_youtube_content(
     logger.info("Preparing to download %s: %s", content_type, info["title"])
 
     ydl_opts = {
-        "format": (
-            f"bestvideo[height<={quality}]+bestaudio/best"
-            if quality != "best"
-            else "best"
-        ),
+        "format": f"bestvideo[height<={quality}]+bestaudio/best",
         "outtmpl": os.path.join(output_location, "%(title)s.%(ext)s"),
         "progress_hooks": [progress_hook],
         "quiet": True,
@@ -124,12 +118,12 @@ def progress_hook(d: dict):
 
 def main():
     """Main function to run the YouTube downloader."""
-    print("YouTube Video/Playlist Downloader")
+    print("YouTube Video Downloader")
     print("=================================")
 
     user_video_url = input("Enter the YouTube video or playlist URL: ")
     user_storage_location = input("Enter the storage location (absolute path): ")
-    user_quality = input("Enter desired quality (e.g., 'best', '720', '480'): ")
+    user_quality = input("Enter desired quality ('1080', '720', '480', etc.): ")
 
     if not os.path.isdir(user_storage_location):
         logger.error("Invalid storage location: %s", user_storage_location)
