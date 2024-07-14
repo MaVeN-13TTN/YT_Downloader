@@ -72,9 +72,22 @@ class TestYoutubeVideoDownloader(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             yvd.download_youtube_content(
-                "https://www.youtube.com/watch?v=dQw4w9WgXcQ", tmpdirname
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                tmpdirname,
+                "720",  # Change: Specify quality
             )
 
+        # Change: Update the expected format option
+        expected_format = "bestvideo[height<=720]+bestaudio/best"
+        mock_ytdl.assert_called_once_with(
+            {
+                "format": expected_format,
+                "outtmpl": f"{tmpdirname}/%(title)s.%(ext)s",
+                "progress_hooks": [yvd.progress_hook],
+                "quiet": True,
+                "no_warnings": True,
+            }
+        )
         mock_instance.download.assert_called_once()
 
     @patch("youtube_video_downloader.tqdm.write")
